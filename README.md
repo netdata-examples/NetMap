@@ -1,4 +1,4 @@
-# NetMap
+# Harita Uygulaması Oluşturmak
 
 Bu proje sayesinde netdata üzerinde bir proje oluşturarak kendi harita uygulamanızı tasarlayabilir ve yayınlayabilirsiniz.
 
