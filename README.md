@@ -9,3 +9,5 @@ Bu proje sayesinde netdata üzerinde bir proje oluşturarak kendi harita uygulam
 - Bu API Key ve xml url'yi Default.aspx te sizden istenen alanlara girin.
 - Şimdi haritanızı işaretlemeye başlayabilirsiniz.
 
+#Haritayı Yayınlamak
+Oluşturduğunuz harita uygulamasını yayınlamak için tek yapmanız gereken projenize ait xml linkini ShowMap.aspx.cs dosyasında bulunan xml adlı değişkene atmak. Sayfa otomatik olarak Latitude,Longitude ve Name verilerine bağlı olarak haritanızı gösterecektir.
