@@ -3,6 +3,7 @@ var marker = new google.maps.Marker();
 var ltlng = [];
 var markers = [];
 var array = [];
+var xml = "http://www.netdata.com/XML/de9786a3";
 $(document).ready(function InitializeMap() {
     var latlng = new google.maps.LatLng(40.756, -73.986);
     var myOptions =
@@ -47,6 +48,7 @@ function AddMarker() {
     $.ajax({
         type: "POST",
         url: "ShowMap.aspx/GetData",
+        data:"{xmlUrl:"+JSON.stringify(xml)+"}",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: false,
@@ -64,6 +66,7 @@ function AddMarker() {
     $.ajax({
         type: "POST",
         url: "ShowMap.aspx/GetMarker",
+        data:"{xmlUrl:"+JSON.stringify(xml)+"}",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: false,

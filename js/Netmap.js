@@ -5,32 +5,19 @@ var ltlng = [];
 var markers = [];
 var array = [];
 var newmarkers = [];
-var accpo; var xml;
+var accpo = "8e3b2fba"; var xml = "http://www.netdata.com/XML/de9786a3";
 $(document).ready(function InitializeMap() {
     var latlng = new google.maps.LatLng(40.756, -73.986);
     var myOptions =
     {
-
         center: latlng,
         scrollWheel: false,
         zoom: 13
-
     };
     map = new google.maps.Map(document.getElementById("map"), myOptions);
-    if ($.cookie('xml') != undefined && $.cookie('accpo') != undefined) {
-        accpo = $.cookie('accpo');
-        xml = $.cookie('xml');
-        AddMarker();
-    }
+    AddMarker();
 });
-function accpochange() {
-    $.cookie('accpo', $("#accpo").val().trim());
-    accpo = $.cookie('accpo');
-}
-function xmlchange() {
-    $.cookie('xml', $("#xmllink").val().trim());
-    xml = $.cookie('xml');
-}
+
 function insertmarker() {
     markers = [];
     var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -151,6 +138,8 @@ function ShowPoint(index) {
     infowindow.open(map, markers[index]);
     markers[index].setAnimation(google.maps.Animation.j);
     map.setZoom(12);
+    $('.point').removeClass('active');
+    $('#point-' + index).addClass('active');
 }
 function SaveArea(latlng) {
     var array = latlng.split(',');
@@ -162,26 +151,28 @@ function SaveArea(latlng) {
     $("#btnmodal").show();
 }
 function Save() {
-    var name = $("#txtareaname").val();
-    var lat = $("#lat").val();
-    var lng = $("#lng").val();
-    $.ajax({
-        type: "POST",
-        url: "Default.aspx/SaveData",
-        contentType: "application/json; charset=utf-8",
-        data: "{name:'" + name + "',lat:'" + lat + "',lng:'" + lng + "'}",
-        dataType: "json",
-        async: false,
-        cache: false,
-        success: function (response) {
-            $("#yeniwizard").modal('toggle');
-            location.reload();
-            $("#txtareaname").val("");
-        },
-        error: function (request, status, error) {
+    if ($("#txtareaname").val().trim() != "") {
+        var name = $("#txtareaname").val();
+        var lat = $("#lat").val();
+        var lng = $("#lng").val();
+        $.ajax({
+            type: "POST",
+            url: "Default.aspx/SaveData",
+            contentType: "application/json; charset=utf-8",
+            data: "{name:'" + name + "',lat:'" + lat + "',lng:'" + lng + "'}",
+            dataType: "json",
+            async: false,
+            cache: false,
+            success: function (response) {
+                $("#yeniwizard").modal('toggle');
+                location.reload();
+                $("#txtareaname").val("");
+            },
+            error: function (request, status, error) {
 
-        }
-    });
+            }
+        });
+    }
 }
 function EditPoint(index) {
     $("#txtareaname").val(markers[index].title);
@@ -192,23 +183,26 @@ function EditPoint(index) {
     $("#btnmodal").hide();
 }
 function EditData() {
-    var id = $("#dataid").text();
-    var name = $("#txtareaname").val();
-    $.ajax({
-        type: "POST",
-        url: "Default.aspx/EditData",
-        contentType: "application/json; charset=utf-8",
-        data: "{dataid:'" + id + "',name:'" + name + "'}",
-        dataType: "json",
-        async: false,
-        cache: false,
-        success: function (response) {
-            location.reload();
-        },
-        error: function (request, status, error) {
-            console.log(error);
-        }
-    });
+    if ($("#txtareaname").val().trim() != "") {
+        var id = $("#dataid").text();
+        var name = $("#txtareaname").val();
+        $.ajax({
+            type: "POST",
+            url: "Default.aspx/EditData",
+            contentType: "application/json; charset=utf-8",
+            data: "{dataid:'" + id + "',name:'" + name + "'}",
+            dataType: "json",
+            async: false,
+            cache: false,
+            success: function (response) {
+                location.reload();
+            },
+            error: function (request, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
 }
 function DeletePoint(id) {
     swal({
@@ -249,47 +243,47 @@ function Ara(address) {
     geocoder = new google.maps.Geocoder();
     insertmarker();
     var address = document.getElementById("aranankelime").value;
-    
-        geocoder.geocode({ 'address': address }, function (results, status) {
-            console.log(results);
-            if (status == google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location
-                });
-                if (results[0].formatted_address) {
-                    region = results[0].formatted_address + '<br />';
+
+    geocoder.geocode({ 'address': address }, function (results, status) {
+        console.log(results);
+        if (status == google.maps.GeocoderStatus.OK) {
+            map.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+                map: map,
+                position: results[0].geometry.location
+            });
+            if (results[0].formatted_address) {
+                region = results[0].formatted_address + '<br />';
+            }
+            var infowindow = new google.maps.InfoWindow({
+                content: '<div style =width:400px; height:400px;>Konum Bilgisi:<br/>Ülke Adı:<br/>' + region + '<br/>Enlem-Boylam Bilgisi:<br/>' + results[0].geometry.location + '</div>'
+            });
+            google.maps.event.addListener(marker, 'click', function () {
+                // Calling the open method of the infoWindow 
+                infowindow.open(map, marker);
+            });
+            google.maps.event.addListener(map, 'click', function (event) {
+                //delete the old marker
+                if (marker) {
+                    marker.setMap(null);
+                    insertmarker();
                 }
-                var infowindow = new google.maps.InfoWindow({
-                    content: '<div style =width:400px; height:400px;>Konum Bilgisi:<br/>Ülke Adı:<br/>' + region + '<br/>Enlem-Boylam Bilgisi:<br/>' + results[0].geometry.location + '</div>'
-                });
+                //creer à la nouvelle emplacement
+                marker = new google.maps.Marker({ position: event.latLng, map: map });
                 google.maps.event.addListener(marker, 'click', function () {
-                    // Calling the open method of the infoWindow 
-                    infowindow.open(map, marker);
-                });
-                google.maps.event.addListener(map, 'click', function (event) {
-                    //delete the old marker
-                    if (marker) {
-                        marker.setMap(null);
-                        insertmarker();
+
+                    if (!infowindow) {
+                        infowindow = new google.maps.InfoWindow();
                     }
-                    //creer à la nouvelle emplacement
-                    marker = new google.maps.Marker({ position: event.latLng, map: map });
-                    google.maps.event.addListener(marker, 'click', function () {
 
-                        if (!infowindow) {
-                            infowindow = new google.maps.InfoWindow();
-                        }
+                    infowindow.setContent("<h5>Burayı Kaydetmek Istermisiniz ?</h5> <hr/><div class='text-center'> <a data-toggle='modal' data-target='#yeniwizard' onclick='SaveArea(\"" + event.latLng + "\")' class='btn btn-info btn-sm' style='margin:0 auto'>Kaydet</a></div>");
+                    infowindow.open(map, marker);
 
-                        infowindow.setContent("<h5>Burayı Kaydetmek Istermisiniz ?</h5> <hr/><div class='text-center'> <a data-toggle='modal' data-target='#yeniwizard' onclick='SaveArea(\"" + event.latLng + "\")' class='btn btn-info btn-sm' style='margin:0 auto'>Kaydet</a></div>");
-                        infowindow.open(map, marker);
-
-                    });
                 });
-            }
-            else {
-                alert("Geocode was not successful for the following reason: " + status);
-            }
-        });
+            });
+        }
+        else {
+            alert("Geocode was not successful for the following reason: " + status);
+        }
+    });
 }

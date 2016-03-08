@@ -37,7 +37,7 @@ public partial class _Default : System.Web.UI.Page
         int i = 0;
         foreach (DataRow row in ds.Tables[0].Rows)
         {
-            sb.Append("<a onclick=\"ShowPoint('" + i + "')\" class='list-group-item' style='cursor:pointer;'>");
+            sb.Append("<a id='point-" + i + "' onclick=\"ShowPoint('" + i + "')\" class='list-group-item point' style='cursor:pointer;'>");
             sb.Append("<span class='badge'>" + labels[i % labels.Length] + "</span>");
             sb.Append("<h4 class='list-group-item-heading'>" + row["dc_Name"] + "</h4>");
             sb.Append("<p class='list-group-item-text'>Latitude:" + row["dc_Latitude"] + "<br/>Longitude:" + row["dc_Longitude"] + "</p>");
@@ -65,21 +65,41 @@ public partial class _Default : System.Web.UI.Page
     {
         try
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://www.netdata.com/AccPo.asmx");
-            webRequest.Headers.Add(@"SOAP:Action:http://tempuri.org/UpdateRecord");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            string envelope = "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><UpdateRecord xmlns='http://tempuri.org/'><APIKey>" + AccPo + "</APIKey><IDNumber>" + Convert.ToInt32(dataid) + "</IDNumber><UpdateFieldName>dc_Name</UpdateFieldName><UpdateFieldNewValue>" + name + "</UpdateFieldNewValue></UpdateRecord></soap:Body></soap:Envelope>";
-            soapEnvelopeXml.LoadXml(envelope);
+            string Result = "";
+            string Content = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
+ <soap:Body>
+    <UpdateRecord xmlns='http://tempuri.org/'>
+        <APIKey>" + AccPo + @"</APIKey>
+        <IDNumber>" + Convert.ToInt32(dataid) + @"</IDNumber>
+        <UpdateFieldName>dc_Name</UpdateFieldName>
+        <UpdateFieldNewValue>" + name + @"</UpdateFieldNewValue>
+    </UpdateRecord>
+  </soap:Body>
+</soap:Envelope>";
+            string url = "http://www.netdata.com/AccPo.asmx";
+            string contentType = "text/xml; charset=utf-8";
+            string method = "POST";
+            string header = "SOAPAction: \"http://tempuri.org/UpdateRecord\"";
 
-            using (Stream stream = webRequest.GetRequestStream())
-            {
-                soapEnvelopeXml.Save(stream);
-            }
-            WebResponse response = webRequest.GetResponse();
-            return "success";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = method;
+            req.ContentLength = Content.Length;
+            req.ContentType = contentType;
+            req.Headers.Add(header);
+
+            Stream strRequest = req.GetRequestStream();
+            StreamWriter sw = new StreamWriter(strRequest);
+            sw.Write(Content);
+            sw.Close();
+
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream strResponse = resp.GetResponseStream();
+            StreamReader sr = new StreamReader(strResponse, System.Text.Encoding.ASCII);
+            Result = sr.ReadToEnd();
+            sr.Close();
+
+            return Result;
         }
         catch (Exception)
         {
@@ -91,21 +111,39 @@ public partial class _Default : System.Web.UI.Page
     {
         try
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://www.netdata.com/AccPo.asmx");
-            webRequest.Headers.Add(@"SOAP:Action:http://tempuri.org/DeleteRecord");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            string envelope = "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><DeleteRecord xmlns='http://tempuri.org/'><APIKey>" + AccPo + "</APIKey><IDNumber>" + id + "</IDNumber></DeleteRecord></soap:Body></soap:Envelope>";
-            soapEnvelopeXml.LoadXml(envelope);
+            string Result = "";
+            string Content = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
+ <soap:Body>
+    <DeleteRecord xmlns='http://tempuri.org/'>
+        <APIKey>" + AccPo + @"</APIKey>
+        <IDNumber>" + id + @"</IDNumber>
+    </DeleteRecord>
+ </soap:Body>
+</soap:Envelope>";
+            string url = "http://www.netdata.com/AccPo.asmx";
+            string contentType = "text/xml; charset=utf-8";
+            string method = "POST";
+            string header = "SOAPAction: \"http://tempuri.org/DeleteRecord\"";
 
-            using (Stream stream = webRequest.GetRequestStream())
-            {
-                soapEnvelopeXml.Save(stream);
-            }
-            WebResponse response = webRequest.GetResponse();
-            return "success";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = method;
+            req.ContentLength = Content.Length;
+            req.ContentType = contentType;
+            req.Headers.Add(header);
+
+            Stream strRequest = req.GetRequestStream();
+            StreamWriter sw = new StreamWriter(strRequest);
+            sw.Write(Content);
+            sw.Close();
+
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream strResponse = resp.GetResponseStream();
+            StreamReader sr = new StreamReader(strResponse, System.Text.Encoding.ASCII);
+            Result = sr.ReadToEnd();
+            sr.Close();
+
+            return Result;
         }
         catch (Exception)
         {
@@ -117,21 +155,52 @@ public partial class _Default : System.Web.UI.Page
     {
         try
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://www.netdata.com/AccPo.asmx");
-            webRequest.Headers.Add(@"SOAP:Action:http://tempuri.org/InsertRecord");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            string envelope = "<soap:Envelope xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'><soap:Body><InsertRecord xmlns='http://tempuri.org/'><APIKey>" + AccPo + "</APIKey><InsertList><AccPoKeyValuePair><Key>dc_Latitude</Key><Value>" + lat + "</Value></AccPoKeyValuePair><AccPoKeyValuePair><Key>dc_Longitude</Key><Value>" + lng + "</Value></AccPoKeyValuePair><AccPoKeyValuePair><Key>dc_Name</Key><Value>" + name + "</Value></AccPoKeyValuePair></InsertList></InsertRecord></soap:Body></soap:Envelope>";
-            soapEnvelopeXml.LoadXml(envelope);
+            string Result = "";
+            string Content = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
+ <soap:Body>
+    <InsertRecord xmlns=""http://tempuri.org/"">
+      <APIKey>8e3b2fba</APIKey>
+      <InsertList>
+        <AccPoKeyValuePair>
+          <Key>dc_Name</Key>
+          <Value>" + name + @"</Value>
+        </AccPoKeyValuePair>
+        <AccPoKeyValuePair>
+          <Key>dc_Latitude</Key>
+          <Value>" + lat + @"</Value>
+        </AccPoKeyValuePair>
+        <AccPoKeyValuePair>
+          <Key>dc_Longitude</Key>
+          <Value>" + lng + @"</Value>
+        </AccPoKeyValuePair>
+      </InsertList>
+    </InsertRecord>
+  </soap:Body>
+</soap:Envelope>";
+            string url = "http://www.netdata.com/AccPo.asmx";
+            string contentType = "text/xml; charset=utf-8";
+            string method = "POST";
+            string header = "SOAPAction: \"http://tempuri.org/InsertRecord\"";
 
-            using (Stream stream = webRequest.GetRequestStream())
-            {
-                soapEnvelopeXml.Save(stream);
-            }
-            WebResponse response = webRequest.GetResponse();
-            return "true";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = method;
+            req.ContentLength = Content.Length;
+            req.ContentType = contentType;
+            req.Headers.Add(header);
+
+            Stream strRequest = req.GetRequestStream();
+            StreamWriter sw = new StreamWriter(strRequest);
+            sw.Write(Content);
+            sw.Close();
+
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream strResponse = resp.GetResponseStream();
+            StreamReader sr = new StreamReader(strResponse, System.Text.Encoding.ASCII);
+            Result = sr.ReadToEnd();
+            sr.Close();
+
+            return Result;
         }
         catch (Exception)
         {

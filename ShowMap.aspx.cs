@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Services;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 
 public partial class ShowMap : System.Web.UI.Page
 {
-    public static string xml = "http://www.netdata.com/XML/5bfa3ccd";
     public static DataSet ds;
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -18,10 +12,10 @@ public partial class ShowMap : System.Web.UI.Page
     }
 
     [WebMethod]
-    public static string GetData()
+    public static string GetData(string xmlUrl)
     {
         ds = new DataSet();
-        ds.ReadXml(xml);
+        ds.ReadXml(xmlUrl);
         char[] labels = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z' };
         StringBuilder sb = new StringBuilder();
         int i = 0;
@@ -37,10 +31,10 @@ public partial class ShowMap : System.Web.UI.Page
         return sb.ToString();
     }
     [WebMethod]
-    public static string[] GetMarker()
+    public static string[] GetMarker(string xmlUrl)
     {
         ds = new DataSet();
-        ds.ReadXml(xml);
+        ds.ReadXml(xmlUrl);
         string[] data = new string[ds.Tables[0].Rows.Count];
         int i = 0;
         foreach (DataRow row in ds.Tables[0].Rows)
