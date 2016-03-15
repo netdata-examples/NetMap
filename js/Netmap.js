@@ -5,7 +5,7 @@ var ltlng = [];
 var markers = [];
 var array = [];
 var newmarkers = [];
-var accpo = "8e3b2fba"; var xml = "http://www.netdata.com/XML/de9786a3";
+var accpo = "*Accpo Apikeyinizi yazınız*"; var xml = "Xml erişim linkinizi yazınız";
 $(document).ready(function InitializeMap() {
     var latlng = new google.maps.LatLng(40.756, -73.986);
     var myOptions =
