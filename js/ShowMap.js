@@ -3,7 +3,7 @@ var marker = new google.maps.Marker();
 var ltlng = [];
 var markers = [];
 var array = [];
-var xml = "http://www.netdata.com/XML/de9786a3";
+var xml = "*Xml Erisim linkini yaziniz*";
 $(document).ready(function InitializeMap() {
     var latlng = new google.maps.LatLng(40.756, -73.986);
     var myOptions =
